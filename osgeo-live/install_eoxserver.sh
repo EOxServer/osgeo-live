@@ -21,7 +21,9 @@
 # =======
 # sudo ./install_eoxserver.sh
 
-USER_NAME="user"
+if [ -z "$USER_NAME" ] ; then
+   USER_NAME="user"
+fi
 USER_HOME="/home/$USER_NAME"
 DATA_DIR="$USER_HOME/gisvm/app-data/eoxserver"
 APACHE_CONF="/etc/apache2/conf.d/eoxserver"
@@ -29,10 +31,10 @@ APACHE_CONF="/etc/apache2/conf.d/eoxserver"
 
 #Install packages
 apt-get update
-apt-get --assume-yes install gcc libgdal1 libgdal1-dev python-gdal \
+apt-get --assume-yes install gcc libgdal1-1.7.0 libgdal1-dev python-gdal \
     libxml2 python-libxml2 sqlite libsqlite3-dev python-lxml python-pip \
     cgi-mapserver python-mapscript python2.7 python2.7-dev \
-    libapache2-mod-wsgi
+    libapache2-mod-wsgi libproj0 libproj-dev
 
 if [ $? -ne 0 ] ; then
    echo 'ERROR: Package install failed! Aborting.'
@@ -85,6 +87,7 @@ if [ ! -d eoxserver_demonstration ] ; then
     python manage.py eoxs_register_dataset \
         --data-files $DATA_DIR/eoxserver_demonstration/data/meris/mosaic_MER_FRS_1P_RGB_reduced/*.tif \
         --rangetype RGB --dataset-series MER_FRS_1P_RGB_reduced --visible=False
+    touch logs/eoxserver.log
     chown www-data logs/eoxserver.log data/ data/config.sqlite
     sed -e 's/http_service_url=http:\/\/localhost:8000\/ows/http_service_url=http:\/\/localhost\/eoxserver\/ows/' -i conf/eoxserver.conf
     
@@ -142,3 +145,7 @@ cp /usr/share/applications/eoxserver.desktop "$USER_HOME/Desktop/"
 
 # Reload Apache
 /etc/init.d/apache2 force-reload
+
+
+# Uninstall dev packages
+#TODO
