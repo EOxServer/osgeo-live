@@ -31,7 +31,7 @@ USER_HOME="/home/$USER_NAME"
 DATA_DIR="$USER_HOME/gisvm/app-data/eoxserver"
 DOC_DIR="$USER_HOME/gisvm/app-data/eoxserver/doc"
 APACHE_CONF="/etc/apache2/conf.d/eoxserver"
-
+TMP_DIR=/tmp/build_eoxserver
 
 ## check required tools are installed
 if [ ! -x "`which wget`" ] ; then
@@ -53,21 +53,30 @@ if [ $? -ne 0 ] ; then
 fi
 
 
+if [ ! -d "$TMP_DIR" ] ; then
+  mkdir "$TMP_DIR"
+fi
+cd "$TMP_DIR"
+
+
 # Install EOxServer
 pip install --upgrade eoxserver==0.2.0
 
 
 # Adjust pysqlite installation (without define=SQLITE_OMIT_LOAD_EXTENSION)
-wget https://pysqlite.googlecode.com/files/pysqlite-2.6.3.tar.gz
+wget -c --progress=dot:mega \
+    "https://pysqlite.googlecode.com/files/pysqlite-2.6.3.tar.gz"
+
 tar xzf pysqlite-2.6.3.tar.gz
 cd pysqlite-2.6.3
+
 cat << EOF > setup.cfg
 [build_ext]
 libraries=sqlite3
 EOF
+
 python setup.py install --force
 cd ..
-rm pysqlite-2.6.3.tar.gz
 rm -r pysqlite-2.6.3
 
 # Install further dependencies
@@ -75,20 +84,21 @@ pip install --upgrade pyspatialite
 
 
 # Create demonstration instance
-[ -d $DATA_DIR ] || mkdir $DATA_DIR
-cd $DATA_DIR
+[ -d "$DATA_DIR" ] || mkdir -p "$DATA_DIR"
+cd "$DATA_DIR"
 if [ ! -d eoxserver_demonstration ] ; then
     echo "Creating EOxServer demonstration instance"
-    eoxserver-admin.py create_instance eoxserver_demonstration --init_spatialite
+    eoxserver-admin.py create_instance eoxserver_demonstration \
+        --init_spatialite
     cd eoxserver_demonstration
     # Configure logging
     sed -e 's/#logging_level=/logging_level=INFO/' -i conf/eoxserver.conf
     sed -e 's/DEBUG = True/DEBUG = False/' -i settings.py
     python manage.py syncdb --noinput
     # Download and register demonstration data
-    wget -c "http://eoxserver.org/export/head/downloads/EOxServer_autotest-0.2.0.tar.gz" \
-      -O EOxServer_autotest-0.2.0.tar.gz
-    echo -n "Extracting demonstration data in `pwd`.\n"
+    wget -c --progress=dot:mega \
+       "http://eoxserver.org/export/head/downloads/EOxServer_autotest-0.2.0.tar.gz"
+    echo "Extracting demonstration data in `pwd`."
     tar -xzf EOxServer_autotest-0.2.0.tar.gz
     mv EOxServer_autotest-0.2.0/data/fixtures/* data/fixtures/
     mkdir data/meris/
@@ -97,10 +107,11 @@ if [ ! -d eoxserver_demonstration ] ; then
     mv EOxServer_autotest-0.2.0/data/meris/mosaic_MER_FRS_1P_RGB_reduced/* data/meris/mosaic_MER_FRS_1P_RGB_reduced/
     rm EOxServer_autotest-0.2.0.tar.gz
     rm -r EOxServer_autotest-0.2.0/
-    python manage.py loaddata auth_data.json initial_rangetypes.json testing_base.json testing_asar_base.json
+    python manage.py loaddata auth_data.json initial_rangetypes.json \
+        testing_base.json testing_asar_base.json
     python manage.py eoxs_add_dataset_series --id MER_FRS_1P_RGB_reduced
     python manage.py eoxs_register_dataset \
-        --data-files $DATA_DIR/eoxserver_demonstration/data/meris/mosaic_MER_FRS_1P_RGB_reduced/*.tif \
+        --data-files "$DATA_DIR"/eoxserver_demonstration/data/meris/mosaic_MER_FRS_1P_RGB_reduced/*.tif \
         --rangetype RGB --dataset-series MER_FRS_1P_RGB_reduced --visible=False
     touch logs/eoxserver.log
     chown www-data logs/eoxserver.log data/ data/config.sqlite
@@ -110,8 +121,8 @@ fi
 
 # Deploy demonstration instance in Apache
 echo "Deploying EOxServer demonstration instance"
-if [ ! -e $DATA_DIR/eoxserver_demonstration/wsgi.py ] ; then
-    cat << EOF > $DATA_DIR/eoxserver_demonstration/wsgi.py
+if [ ! -e "$DATA_DIR"/eoxserver_demonstration/wsgi.py ] ; then
+    cat << EOF > "$DATA_DIR"/eoxserver_demonstration/wsgi.py
 import os
 import sys
 from django.core.handlers.wsgi import WSGIHandler
@@ -124,14 +135,14 @@ EOF
 fi
 
 # Add Apache configuration
-cat << EOF > $APACHE_CONF
+cat << EOF > "$APACHE_CONF"
 Alias /media /usr/local/lib/python2.7/dist-packages/django/contrib/admin/media
 Alias /static /usr/local/lib/python2.7/dist-packages/eoxserver/webclient/static
 Alias /eoxserver "$DATA_DIR/eoxserver_demonstration/wsgi.py"
 
 ################################################################################
 #Restrict wsgi threads in order to run non thread safe code:
-WSGIDaemonProcess ows threads=1
+WSGIDaemonProcess ows processes=10 threads=1
 WSGIProcessGroup ows
 ################################################################################
 
@@ -148,7 +159,7 @@ WSGIProcessGroup ows
     allow from all
 </Directory>
 EOF
-echo -n "Done\n"
+echo "Done"
 
 
 # Install desktop icon
@@ -178,28 +189,14 @@ cp /usr/share/applications/eoxserver.desktop "$USER_HOME/Desktop/"
 chown -R $USER_NAME.$USER_NAME "$USER_HOME/Desktop/eoxserver.desktop"
 
 
-# Add menu item
-apt-get --assume-yes install menu
-if [ ! -e /usr/share/menu/eoxserver ] ; then
-   cat << EOF > /usr/share/menu/eoxserver
-?package(eoxserver):needs="X11"\
-  section="Geospatial/Geoservers"\
-  title="EOxServer"\
-  command="firefox http://localhost/eoxserver/"\
-  icon="/usr/share/icons/eoxserver_60x60.logo.png"
-EOF
-  update-menus
-fi
-
-
 # EOxServer Documentation
 echo "Getting EOxServer documentation"
-[ -d $DOC_DIR ] || mkdir $DOC_DIR
-cd $DOC_DIR
+[ -d "$DOC_DIR" ] || mkdir "$DOC_DIR"
+cd "$DOC_DIR"
 wget -c "http://eoxserver.org/export/head/downloads/EOxServer_documentation-0.2.0.pdf" \
   -O EOxServer_documentation-0.2.0.pdf
 ln -s EOxServer_documentation-0.2.0.pdf EOxServer_documentation.pdf
-ln -s $DOC_DIR /var/www/eoxserver-docs
+ln -s "$DOC_DIR" /var/www/eoxserver-docs
 
 # Add Documentation Launch icon to desktop
 if [ ! -e /usr/share/applications/eoxserver-docs.desktop ] ; then
@@ -228,6 +225,7 @@ chown -R $USER_NAME:$USER_NAME "$USER_HOME/Desktop/eoxserver-docs.desktop"
 apt-get --assume-yes remove libgdal1-dev libsqlite3-dev python2.7-dev \
     libproj-dev libgeos-dev libgeos++-dev
 apt-get --assume-yes autoremove
+rm "$TMP_DIR"/pysqlite-2.6.3.tar.gz
 
 
 echo "Finished EOxServer installation"
