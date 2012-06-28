@@ -108,7 +108,7 @@ if [ ! -d eoxserver_demonstration ] ; then
 fi
 
 
-# Deploy demonstration instance in Apache2
+# Deploy demonstration instance in Apache
 echo "Deploying EOxServer demonstration instance"
 if [ ! -e $DATA_DIR/eoxserver_demonstration/wsgi.py ] ; then
     cat << EOF > $DATA_DIR/eoxserver_demonstration/wsgi.py
@@ -123,6 +123,7 @@ application = WSGIHandler()
 EOF
 fi
 
+# Add Apache configuration
 cat << EOF > $APACHE_CONF
 Alias /media /usr/local/lib/python2.7/dist-packages/django/contrib/admin/media
 Alias /static /usr/local/lib/python2.7/dist-packages/eoxserver/webclient/static
@@ -196,6 +197,9 @@ echo "Getting EOxServer documentation"
 cd $DOC_DIR
 wget -c "http://eoxserver.org/export/head/downloads/EOxServer_documentation-0.2.0.pdf" \
   -O EOxServer_documentation-0.2.0.pdf
+ln -s EOxServer_documentation-0.2.0.pdf EOxServer_documentation.pdf
+ln -s /var/www/eoxserver-docs $DOC_DIR
+
 # Add Documentation Launch icon to desktop
 if [ ! -e /usr/share/applications/eoxserver-docs.desktop ] ; then
    cat << EOF > /usr/share/applications/eoxserver-docs.desktop
@@ -205,7 +209,7 @@ Encoding=UTF-8
 Name=EOxServer Documentation
 Comment=EOxServer Documentation
 Categories=Geospatial;Geoservers;
-Exec=evince "$DOC_DIR/EOxServer_documentation-0.2.0.pdf"
+Exec=evince "$DOC_DIR/EOxServer_documentation.pdf"
 Icon=/usr/share/icons/eoxserver_60x60.logo.png
 Terminal=false
 StartupNotify=false
