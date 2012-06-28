@@ -45,7 +45,7 @@ apt-get update
 apt-get --assume-yes install gcc libgdal1-1.7.0 libgdal1-dev python-gdal \
     libxml2 python-libxml2 sqlite libsqlite3-dev python-lxml python-pip \
     cgi-mapserver python-mapscript python2.7 python2.7-dev \
-    libapache2-mod-wsgi libproj0 libproj-dev
+    libapache2-mod-wsgi libproj0 libproj-dev libgeos-dev libgeos++-dev
 
 if [ $? -ne 0 ] ; then
    echo 'ERROR: Package install failed! Aborting.'
@@ -152,7 +152,7 @@ echo -n "Done\n"
 
 
 # Install desktop icon
-echo "Installing EOxServer desktop icon"
+echo "Installing EOxServer icon"
 if [ ! -e "/usr/share/icons/eoxserver_60x60.logo.png" ] ; then
    cp "$USER_HOME/gisvm/doc/images/project_logos/logo-eoxserver-3.png" \
        /usr/share/icons/eoxserver_60x60.logo.png
@@ -194,11 +194,12 @@ fi
 
 # EOxServer Documentation
 echo "Getting EOxServer documentation"
+[ -d $DOC_DIR ] || mkdir $DOC_DIR
 cd $DOC_DIR
 wget -c "http://eoxserver.org/export/head/downloads/EOxServer_documentation-0.2.0.pdf" \
   -O EOxServer_documentation-0.2.0.pdf
 ln -s EOxServer_documentation-0.2.0.pdf EOxServer_documentation.pdf
-ln -s /var/www/eoxserver-docs $DOC_DIR
+ln -s $DOC_DIR /var/www/eoxserver-docs
 
 # Add Documentation Launch icon to desktop
 if [ ! -e /usr/share/applications/eoxserver-docs.desktop ] ; then
@@ -225,7 +226,7 @@ chown -R $USER_NAME:$USER_NAME "$USER_HOME/Desktop/eoxserver-docs.desktop"
 
 # Uninstall dev packages
 apt-get --assume-yes remove libgdal1-dev libsqlite3-dev python2.7-dev \
-    libproj-dev
+    libproj-dev libgeos-dev libgeos++-dev
 apt-get --assume-yes autoremove
 
 
