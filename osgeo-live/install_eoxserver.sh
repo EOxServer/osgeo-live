@@ -92,6 +92,7 @@ if [ ! -d eoxserver_demonstration ] ; then
     echo "Creating EOxServer demonstration instance"
     eoxserver-admin.py create_instance eoxserver_demonstration \
         --init_spatialite
+    export DJANGO_SETTINGS_MODULE="eoxserver_demonstration.settings"
     cd eoxserver_demonstration
     # Configure logging
     sed -e 's/#logging_level=/logging_level=INFO/' -i conf/eoxserver.conf
