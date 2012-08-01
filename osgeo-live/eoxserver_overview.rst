@@ -33,7 +33,7 @@ Standard services for efficient exploitation by users.
   Geospatial Consortium (OGC); WMS, WCS, EO-WMS, EO-WCS
 * efficient exploitation by users: User defined sub-setting; view and download
 
-.. image:: ../../images/screenshots/1024x768/eoxserver_screenshot.png
+.. image:: ../../images/screenshots/1024x768/eoxserver_screenshot.jpg
   :scale: 50 %
   :alt: EOxServer embedded client screen shot
   :align: right
@@ -95,7 +95,7 @@ Demo
 Documentation
 --------------------------------------------------------------------------------
 
-* `EOxServer 0.2.0 Documentation <../../eoxserver-docs/EOxServer_documentation.pdf>`_
+* `EOxServer 0.2.1 Documentation <../../eoxserver-docs/EOxServer_documentation.pdf>`_
 
 Details
 --------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ Details
 
 **Licence:** `MIT-style license <http://eoxserver.org/doc/copyright.html#license>`_
 
-**Software Version:** 0.2.0
+**Software Version:** 0.2.1
 
 **Supported Platforms:** Linux, Windows, Mac
 

@@ -41,7 +41,7 @@ fi
 
 
 #Install packages
-apt-get update
+apt-get -q update
 apt-get --assume-yes install gcc libgdal1-1.7.0 libgdal1-dev python-gdal \
     libxml2 python-libxml2 sqlite libsqlite3-dev python-lxml python-pip \
     cgi-mapserver python-mapscript python2.7 python2.7-dev \
@@ -60,7 +60,7 @@ cd "$TMP_DIR"
 
 
 # Install EOxServer
-pip install --upgrade eoxserver==0.2.0
+pip install --upgrade eoxserver==0.2.1
 
 
 # Adjust pysqlite installation (without define=SQLITE_OMIT_LOAD_EXTENSION)
@@ -99,18 +99,18 @@ if [ ! -d eoxserver_demonstration ] ; then
     python manage.py syncdb --noinput
     # Download and register demonstration data
     wget -c --progress=dot:mega \
-       "http://eoxserver.org/export/head/downloads/EOxServer_autotest-0.2.0.tar.gz"
+       "http://eoxserver.org/export/head/downloads/EOxServer_autotest-0.2.1.tar.gz"
     echo "Extracting demonstration data in `pwd`."
-    tar -xzf EOxServer_autotest-0.2.0.tar.gz
-    mv EOxServer_autotest-0.2.0/data/fixtures/auth_data.json \
-        EOxServer_autotest-0.2.0/data/fixtures/initial_rangetypes.json \
+    tar -xzf EOxServer_autotest-0.2.1.tar.gz
+    mv EOxServer_autotest-0.2.1/data/fixtures/auth_data.json \
+        EOxServer_autotest-0.2.1/data/fixtures/initial_rangetypes.json \
         data/fixtures/
     mkdir -p data/meris/
-    mv EOxServer_autotest-0.2.0/data/meris/README data/meris/
-    mv EOxServer_autotest-0.2.0/data/meris/mosaic_MER_FRS_1P_RGB_reduced/ \
+    mv EOxServer_autotest-0.2.1/data/meris/README data/meris/
+    mv EOxServer_autotest-0.2.1/data/meris/mosaic_MER_FRS_1P_RGB_reduced/ \
         data/meris/
-    rm EOxServer_autotest-0.2.0.tar.gz
-    rm -r EOxServer_autotest-0.2.0/
+    rm EOxServer_autotest-0.2.1.tar.gz
+    rm -r EOxServer_autotest-0.2.1/
     chmod g+w -R .
     chgrp users -R .
     python manage.py loaddata auth_data.json initial_rangetypes.json
@@ -203,9 +203,9 @@ echo "Getting EOxServer documentation"
 cd "$DOC_DIR"
 chmod g+w .
 chgrp users .
-wget -c "http://eoxserver.org/export/head/downloads/EOxServer_documentation-0.2.0.pdf" \
-  -O EOxServer_documentation-0.2.0.pdf
-ln -sf EOxServer_documentation-0.2.0.pdf EOxServer_documentation.pdf
+wget -c "http://eoxserver.org/export/head/downloads/EOxServer_documentation-0.2.1.pdf" \
+  -O EOxServer_documentation-0.2.1.pdf
+ln -sf EOxServer_documentation-0.2.1.pdf EOxServer_documentation.pdf
 chmod g+w -R EOxServer_documentation*
 chgrp users -R EOxServer_documentation*
 ln -sTf "$DOC_DIR" /var/www/eoxserver-docs
