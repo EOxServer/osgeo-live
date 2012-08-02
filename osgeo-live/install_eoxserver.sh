@@ -31,7 +31,7 @@ USER_HOME="/home/$USER_NAME"
 DATA_DIR="/usr/local/share/gisvm/app-data/eoxserver"
 DOC_DIR="/usr/local/share/gisvm/app-data/eoxserver/doc"
 APACHE_CONF="/etc/apache2/conf.d/eoxserver"
-TMP_DIR=/tmp/build_eoxserver
+TMP_DIR="/tmp/build_eoxserver"
 
 ## check required tools are installed
 if [ ! -x "`which wget`" ] ; then
@@ -123,9 +123,9 @@ if [ ! -d eoxserver_demonstration ] ; then
         --rangetype RGB --dataset-series MER_FRS_1P_RGB_reduced --visible=False
     touch logs/eoxserver.log
     chown www-data logs/eoxserver.log data/ data/config.sqlite
-    sed -e 's/http_service_url=http:\/\/localhost:8000\/ows/http_service_url=http:\/\/localhost\/eoxserver\/ows/' -i conf/eoxserver.conf
+    sed -e 's,http_service_url=http://localhost:8000/ows,http_service_url=http://localhost/eoxserver/ows,' -i conf/eoxserver.conf
     # Collect static files
-    sed -e "s/STATIC_ROOT = ''/STATIC_ROOT = '$DATA_DIR\/eoxserver_demonstration\/static'/" -i settings.py
+    sed -e "s,STATIC_ROOT = '',STATIC_ROOT = '$DATA_DIR/eoxserver_demonstration/static'," -i settings.py
     mkdir static
     python manage.py collectstatic --noinput
 fi
