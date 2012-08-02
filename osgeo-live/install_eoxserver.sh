@@ -152,7 +152,7 @@ chgrp users "$DATA_DIR"/eoxserver_demonstration/wsgi.py
 
 # Add Apache configuration
 cat << EOF > "$APACHE_CONF"
-Alias /static $DATA_DIR/eoxserver_demonstration/static
+Alias /static "$DATA_DIR/eoxserver_demonstration/static"
 Alias /eoxserver "$DATA_DIR/eoxserver_demonstration/wsgi.py"
 
 ################################################################################
