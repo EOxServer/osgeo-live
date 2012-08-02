@@ -89,7 +89,7 @@ Implemented Standards
 Demo
 --------------------------------------------------------------------------------
 
-* `Local <http://localhost/eoxsever/>`_
+* `Local <http://localhost/eoxserver/>`_
 * `Online <https://eoxserver.org/demo_stable/>`_
 
 Documentation
