@@ -92,8 +92,10 @@ if [ ! -d eoxserver_demonstration ] ; then
     echo "Creating EOxServer demonstration instance"
     eoxserver-admin.py create_instance eoxserver_demonstration \
         --init_spatialite
-    export DJANGO_SETTINGS_MODULE="eoxserver_demonstration.settings"
     cd eoxserver_demonstration
+    rm -r eoxserver_demonstration
+    sed -e 's/eoxserver_demonstration\.settings/settings/' -i manage.py
+    sed -e 's/eoxserver_demonstration\.urls/urls/' -i settings.py
     # Configure logging
     sed -e 's/#logging_level=/logging_level=INFO/' -i conf/eoxserver.conf
     sed -e 's/DEBUG = True/DEBUG = False/' -i settings.py
@@ -131,12 +133,13 @@ if [ ! -e "$DATA_DIR"/eoxserver_demonstration/wsgi.py ] ; then
     cat << EOF > "$DATA_DIR"/eoxserver_demonstration/wsgi.py
 import os
 import sys
-from django.core.handlers.wsgi import WSGIHandler
-path = "$DATA_DIR/"
+path = "$DATA_DIR/eoxserver_demonstration/"
 if path not in sys.path:
     sys.path.append(path)
-os.environ["DJANGO_SETTINGS_MODULE"] = "eoxserver_demonstration.settings"
-application = WSGIHandler()
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
 EOF
 fi
 chmod g+w "$DATA_DIR"/eoxserver_demonstration/wsgi.py
