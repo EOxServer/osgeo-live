@@ -124,6 +124,10 @@ if [ ! -d eoxserver_demonstration ] ; then
     touch logs/eoxserver.log
     chown www-data logs/eoxserver.log data/ data/config.sqlite
     sed -e 's/http_service_url=http:\/\/localhost:8000\/ows/http_service_url=http:\/\/localhost\/eoxserver\/ows/' -i conf/eoxserver.conf
+    # Collect static files
+    sed -e "s/STATIC_ROOT = ''/STATIC_ROOT = '$DATA_DIR\/eoxserver_demonstration\/static'/" -i settings.py
+    mkdir static
+    python manage.py collectstatic --noinput
 fi
 
 
@@ -148,8 +152,7 @@ chgrp users "$DATA_DIR"/eoxserver_demonstration/wsgi.py
 
 # Add Apache configuration
 cat << EOF > "$APACHE_CONF"
-Alias /media /usr/local/lib/python2.7/dist-packages/django/contrib/admin/media
-Alias /static /usr/local/lib/python2.7/dist-packages/eoxserver/webclient/static
+Alias /static $DATA_DIR/eoxserver_demonstration/static
 Alias /eoxserver "$DATA_DIR/eoxserver_demonstration/wsgi.py"
 
 ################################################################################
