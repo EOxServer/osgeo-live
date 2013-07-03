@@ -1,7 +1,7 @@
-:Author: OSGeo-Live
+:Author: OSGeo-Live 
 :Author: Stephan Meissl, Stephan Krause
-:Reviewer: 
-:Version: osgeo-live6.5
+:Reviewer: Angelos Tzotsos
+:Version: osgeo-live7.0
 :License: Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 
 .. image:: ../../images/project_logos/logo-eoxserver-2.png
@@ -30,15 +30,25 @@ This Quick Start describes how to:
 * View, filter, subset, and download EO data via EOxServer's Web Client
 * Register EO data archives via EOxServer's Admin Client
 
+.. contents:: Contents
+
 See the :doc:`EOxServer Overview <../overview/eoxserver_overview>`, the 
 `local EOxServer documentation 
 <../../eoxserver-docs/EOxServer_documentation.pdf>`_, or the `online 
 EOxServer documentation <http://eoxserver.org/doc/>`_ for more information.
 
-.. contents:: Contents
+.. image:: ../../images/screenshots/1024x768/eoxserver_documentation.png
+  :scale: 50 %
+  :alt: EOxServer documentation
 
 Demonstration Instance
 ----------------------
+
+.. Commented since Tomcat isn't started automatically anymore (#1032).
+    In case you use OSGeoLive with 1GB RAM or less it is recommended to stop default Tomcat service before launching EOxServer
+    :: 
+
+      sudo service tomcat6 stop
 
 The icon labeled `EOxServer` filed under `Web Services` launches a browser 
 showing the demonstration instance available at http://localhost/eoxserver/ 
@@ -48,13 +58,6 @@ which provides the same data as the `one available online
 .. image:: ../../images/screenshots/1024x768/eoxserver_start.png
   :scale: 50 %
   :alt: EOxServer demonstration start
-
-The icon labeled `EOxServer Documentation` also filed under `Web Services` 
-launches a pdf viewer showing the available documentation.
-
-.. image:: ../../images/screenshots/1024x768/eoxserver_documentation.png
-  :scale: 50 %
-  :alt: EOxServer documentation
 
 Web Client
 ~~~~~~~~~~
@@ -126,7 +129,7 @@ be found in the `operators' guide
   :scale: 50 %
   :alt: EOxServer demonstration admin client start
 
-It is for example possible to view and alter the `EO Metadata` of the 
+It is for example possible to view and alter the `EO Metadata Entries` of the 
 configured `Dataset Series`.
 
 .. image:: ../../images/screenshots/1024x768/eoxserver_adminclient3.png
