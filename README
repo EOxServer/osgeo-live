@@ -1,4 +1,5 @@
-This is a copy of the EOxServer relevant material for the OSGeo-Live DVD.
+# EOxServer on the [OSGeo-Live DVD](http://live.osgeo.org)
 
-The master SVN is:
-https://svn.osgeo.org/osgeo/livedvd/gisvm/trunk
+This is a copy of the EOxServer relevant material for the [OSGeo-Live DVD](http://live.osgeo.org).
+
+The master repository is: https://svn.osgeo.org/osgeo/livedvd/gisvm/trunk
